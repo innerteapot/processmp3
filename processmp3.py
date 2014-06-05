@@ -25,6 +25,7 @@ class Track(object):
       self.full_path    = f
       (head, tail)      = os.path.split(f)
       self.file         = tail
+      self.path         = head
 
       # Example:
       #   Podcast - Dream Time - Still Stream - podcast - 2012 - 23-Dream Time Episode 023.mp3
@@ -80,6 +81,11 @@ class Transcoder(object):
         if not os.path.exists(archive_location):
             return False
 
+        if not os.path.exists(self.track.path):
+            return False
+
+        os.chdir(self.track.path)
+
         src_file = self.track.file
         (root, ext) = os.path.splitext(self.track.file)
 
@@ -133,8 +139,8 @@ def main():
         usage()
 
     if os.path.exists(args[0]) and os.path.exists(args[1]):
-        source  = args[0]
-        archive = args[1]
+        source  = os.path.abspath(args[0])
+        archive = os.path.abspath(args[1])
     else:
         usage()
 
